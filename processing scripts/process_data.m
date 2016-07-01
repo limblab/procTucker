@@ -9,6 +9,18 @@ input_data.num_stim_cases=4;
 input_data.currents=[5000 10000 15000 20000];
 input_data.current_units='pA';
 run_data_processing(function_name,folderpath,input_data)
+%% psychometrics for stimcodes 0,1 2 all stim 4 electrods @ 20uA, and codes 3-6 stim 1 different elctrode at 40uA
+folderpath='/media/tucker/My Passport/local processing/chips/experiment_20160527-29_BD_322degstim20uA_4distractors40uA/';
+function_name='psychometrics_3at20uA_4distractorsAt40uA';
+input_data.matchstring='Chips';
+input_data.labnum=6;
+input_data.mainPD=322;
+input_data.distractorPD=[147 -165 -83 101];
+input_data.distractor_current=40;
+input_data.main_current=20;
+input_data.current_units='uA';
+run_data_processing(function_name,folderpath,input_data)
+
 %% batch of psychometrics:
 function_name='quickscript_function_looped';
 input_data.labnum=3;
@@ -42,13 +54,14 @@ input_data.vel_pd=1;%default flag is 1
 input_data.force_pd=0;%default flag is 0
 data_struct2 = run_data_processing(function_name,folderpath,input_data);
 %% actVSpass pd comparison
-folderpath='/media/tucker/My Passport/local processing/chips/experiment_20160526_CObump_PD/';
+folderpath='/media/tucker/Iomega HDD/local processing/chips/experiment_20160620_CObump_PD/';
 functionName='comparePD_actpass';
-inputData.fileName='Chips_20160526_COBump_area2_tucker_001';
+inputData.fileName='Chips_20160620_COBump_area2_tucker_001';
 inputData.task='taskCObump';
-inputData.ranBy='ranByTucker';
+inputData.ranBy='ranByTucker'; 
 inputData.array='arrayS1Area2';
 inputData.monkey='monkeyChips';
+inputData.mapFile='mapFile/media/tucker/Iomega HDD/local processing/chips/mapFile/SN 6251-001455.cmp';
 inputData.lab=6;
 data_struct=run_data_processing(functionName,folderpath,inputData);
 %% bump PDs from bump-direction/psychophysics task
@@ -140,6 +153,21 @@ function_name='get_neuron_matching';
 input_data.matchstring='Pedro';
 input_data.labnum=2;
 data_struct = run_data_processing(function_name,folderpath,input_data);
+%% parse file for katsaggelos group using commonDataStructure:
+folderpath='/media/tucker/My Passport/local processing/mihili/experiment_20130710_UNT/';
+functionName='parseForKatsaggelos';
+inputData.fileName1='sorted_Mihili_M1_UNT2D_CO_07102013_001-01';
+inputData.fileName2='Mihili_PMDSORTED_07102013_UNT2D_001';
+
+inputData.task='taskUNT';
+inputData.ranBy='ranByBrianD'; 
+inputData.array1='arrayM1'; 
+inputData.array2='arrayPMD';
+inputData.monkey='monkeyMihili';
+inputData.mapFile1='mapFile/home/tucker/Desktop/GIT/limblab_analysis/lib/Map Plotting/Maps/6250-000989.cmp';
+inputData.mapFile2='mapFile/home/tucker/Desktop/GIT/limblab_analysis/lib/Map Plotting/Maps/6251-000987.cmp';
+inputData.lab=6;
+dataStruct = runDataProcessing(functionName,folderpath,inputData);
 %% export data for katsaggelos group
 folderpath='E:\local processing\pedro\20100726_export_data_for_Katsaggelos_Grp';
 function_name='export_for_katsaggelos';
@@ -153,6 +181,17 @@ input_data.only_sorted=1;
 input_data.labnum=3;
 input_data.task='RW';
 data_struct = run_data_processing(function_name,folderpath,input_data);
+%% export file for warren grill group
+folderPath='/media/tucker/Iomega HDD/local processing/Han/20160620_CObump_GrillExport/Han_20160620_grill_bump_data_Chris_001.nev';
+inputData.fileName='Han_20160620_grill_bump_data_Chris_001';
+functionName='parseForWG';
+inputData.labNum=6;
+inputData.ranBy='ranByTucker';
+inputData.monkey='monkeyChips';
+inputData.array='arrayS1Area2';
+inputData.task='taskCObump';
+inputData.mapFile='mapFile/media/tucker/Iomega HDD/local processing/chips/mapFile/SN 6251-001455.cmp';
+dataStruct=run_data_processing(functionName,folderPath,inputData);
 %% test encoder skipping:
 
 folderpath='E:\local processing\test_skips';
