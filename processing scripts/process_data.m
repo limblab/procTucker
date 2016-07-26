@@ -167,7 +167,7 @@ inputData.monkey='monkeyMihili';
 inputData.mapFile1='mapFile/home/tucker/Desktop/GIT/limblab_analysis/lib/Map Plotting/Maps/6250-000989.cmp';
 inputData.mapFile2='mapFile/home/tucker/Desktop/GIT/limblab_analysis/lib/Map Plotting/Maps/6251-000987.cmp';
 inputData.lab=6;
-dataStruct = runDataProcessing(functionName,folderpath,inputData);
+dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
 %% export data for katsaggelos group
 folderpath='E:\local processing\pedro\20100726_export_data_for_Katsaggelos_Grp';
 function_name='export_for_katsaggelos';
@@ -182,16 +182,17 @@ input_data.labnum=3;
 input_data.task='RW';
 data_struct = run_data_processing(function_name,folderpath,input_data);
 %% export file for warren grill group
-folderPath='/media/tucker/Iomega HDD/local processing/Han/20160620_CObump_GrillExport/Han_20160620_grill_bump_data_Chris_001.nev';
+folderPath='/media/tucker/My Passport/local processing/Han/experiment_20160620_COBump_GrillExport/';
 inputData.fileName='Han_20160620_grill_bump_data_Chris_001';
 functionName='parseForWG';
 inputData.labNum=6;
-inputData.ranBy='ranByTucker';
-inputData.monkey='monkeyChips';
+inputData.ranBy='ranByChris';
+inputData.monkey='monkeyHan';
 inputData.array='arrayS1Area2';
 inputData.task='taskCObump';
-inputData.mapFile='mapFile/media/tucker/Iomega HDD/local processing/chips/mapFile/SN 6251-001455.cmp';
-dataStruct=run_data_processing(functionName,folderPath,inputData);
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/chips/array_map/SN6251-001455.cmp';
+inputData.mapFile='mapFile/media/tucker/My Passport/local processing/Han/mapfile/SN 6251-001459.cmp';
+dataStruct=runDataProcessing(functionName,folderPath,inputData);
 %% test encoder skipping:
 
 folderpath='E:\local processing\test_skips';

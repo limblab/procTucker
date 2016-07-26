@@ -53,6 +53,6 @@ function [figureList,outputData]=parseForKatsaggelos(folderpath,inputData)
     ex.analysis(end).notes='fit on only movement';
 
     outputData.ex=ex;
-    outputData.allBins=ex.bins.data;
-    outputData.moveBins=ex.bins.data(windows2mask(),:);
+    outputData.allBins=ex.bin.data;
+    outputData.moveBins=ex.bin.data(windows2mask(ex.bin.data.t,ex.bin.weinerConfig.windows),:);
 end
