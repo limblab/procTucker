@@ -18,7 +18,7 @@ chan=151;%digital input is CH151
 
 sessionTimer=tic;
 
-%initialize connection to cerebus usign cbmex:
+%initialize connection to cerebus using cbmex:
 if ~cbmex('open',1) %try to open a cerebus connection and check that the connection was successful in 1 line
     error('psychophysicsStim:CerebusConnectionFailed','failed to open a connection with a central instance on this PC')
 end
@@ -31,7 +31,7 @@ cbmex('trialconfig',1);
 try
 
     %initialize cerestim object:
-    Bstimulator=cerestim96;
+    Bstimulator=cerestim96('stim100');
     %connect to cerestim:
     Bstimulator.connect(1)%flag of 1 forces usb connection
     if ~Bstimulator.isConnected
