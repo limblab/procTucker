@@ -154,18 +154,15 @@ input_data.matchstring='Pedro';
 input_data.labnum=2;
 data_struct = run_data_processing(function_name,folderpath,input_data);
 %% parse file for katsaggelos group using commonDataStructure:
-folderpath='/media/tucker/My Passport/local processing/mihili/experiment_20130710_UNT/';
+folderpath='/media/tucker/My Passport/local processing/Han/experiment_20160325_RW_hold/';
 functionName='parseForKatsaggelos';
-inputData.fileName1='sorted_Mihili_M1_UNT2D_CO_07102013_001-01';
-inputData.fileName2='Mihili_PMDSORTED_07102013_UNT2D_001';
+inputData.fileName1='Han_20160325_RW_hold_area2_001';
 
-inputData.task='taskUNT';
-inputData.ranBy='ranByBrianD'; 
-inputData.array1='arrayM1'; 
-inputData.array2='arrayPMD';
-inputData.monkey='monkeyMihili';
-inputData.mapFile1='mapFile/home/tucker/Desktop/GIT/limblab_analysis/lib/Map Plotting/Maps/6250-000989.cmp';
-inputData.mapFile2='mapFile/home/tucker/Desktop/GIT/limblab_analysis/lib/Map Plotting/Maps/6251-000987.cmp';
+inputData.task='taskRW';
+inputData.ranBy='ranByRaeed'; 
+inputData.array1='arrayArea2'; 
+inputData.monkey='monkeyHan';
+inputData.mapFile1='mapFile/media/fsmresfiles/limblab/lab_folder/Animal-Miscellany/Han_13B1/map files/Left S1/SN 6251-001459.cmp';
 inputData.lab=6;
 dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
 %% export data for katsaggelos group
