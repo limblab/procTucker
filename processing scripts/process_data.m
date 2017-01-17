@@ -215,24 +215,24 @@ function_name='testEncoderSkips';
 data_struct=run_data_processing(function_name,folderpath);
 
 %% process stimulation artifacts:
-folderpath='/media/tucker/My Passport/local processing/stimTesting/20161224_saline/1chanStim/';
+folderpath='/media/tucker/My Passport/local processing/stimTesting/20170105_chips/1ch_50uA/';
 functionName='processStimArtifact';
 
 inputData.task='tasknone';
 inputData.ranBy='ranByTucker'; 
-inputData.array1='arraySaline'; 
-inputData.monkey='monkeySaline';
+inputData.array1='arrayS1'; 
+inputData.monkey='monkeyChips';
 %han
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
 %chips
-%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
+inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
 %chewie
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161205_chewie_PMDStim_PMD-recording/Chewie Left PMd SN 6251-001469.cmp';
 %saline
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161020_saline/1025-0370.cmp';
 %saline2
-inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
-inputData.windowSize=30*2;%in points
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
+inputData.windowSize=30*5;%in points
 inputData.presample=5;%in points
 inputData.plotRange=0.300;%in mV
 inputData.lab=6;
