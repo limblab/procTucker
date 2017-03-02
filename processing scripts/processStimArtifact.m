@@ -310,7 +310,7 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
             stimAnColor=[halfFall',halfFall',oneFill];
             set(gca,'colororder',stimAnColor);
             hold all
-            plot(plot(squeeze(artifactData(i).artifact(j,anodalMask,:))'-squeeze(repmat(artifactData(i).artifact(j,anodalMask,1),[1,1,size(artifactData(i).artifact,3)]))'))
+            plot(squeeze(artifactData(i).artifact(j,anodalMask,:))'-squeeze(repmat(artifactData(i).artifact(j,anodalMask,1),[1,1,size(artifactData(i).artifact,3)]))')
             axis tight%keeps from padding time, we will set y axis below:
             ylim([-inputData.plotRange,inputData.plotRange]*1000);
             set(gca,'XTickLabel',[])
@@ -406,7 +406,7 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
                 stimAnColor=[halfFall',halfFall',oneFill];
                 set(gca,'colororder',stimAnColor);
                 hold all
-                plot(plot(squeeze(artifactData(i).artifact(j,anodalMask,:))'-squeeze(repmat(artifactData(i).artifact(j,anodalMask,1),[1,1,size(artifactData(i).artifact,3)]))'))
+                plot(squeeze(artifactData(i).artifact(j,anodalMask,:))'-squeeze(repmat(artifactData(i).artifact(j,anodalMask,1),[1,1,size(artifactData(i).artifact,3)]))')
                 axis tight%keeps from padding time, we will set y axis below:
                 ylim([-inputData.plotRange,inputData.plotRange]*1000);
                 set(gca,'XTickLabel',[])
