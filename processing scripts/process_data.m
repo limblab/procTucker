@@ -1,8 +1,8 @@
 %script to set input data and execute data processing
 %% process psyhcometrics
-folderpath='E:\local processing\chips\experiment_20160513-15_BD_310degmovePD_4chStim_5-20ua';
+folderpath='/media/tucker/My Passport/local processing/chips/experiment_20170118-20_BD/';
 function_name='quickscript_function_looped';
-input_data.matchstring='Chips';
+input_data.matchstring='chips';
 input_data.labnum=6;
 input_data.stimcodes=[0 1 2 3];
 input_data.num_stim_cases=4;
@@ -169,7 +169,7 @@ input_data.matchstring='Pedro';
 input_data.labnum=2;
 data_struct = run_data_processing(function_name,folderpath,input_data);
 %% parse file for katsaggelos group using commonDataStructure:
-folderpath='/media/tucker/My Passport/local processing/Han/resyncTesting/';
+folderpath='/media/tucker/My Passport/local processing/Han/experiment_20160325_RW_hold/';
 functionName='parseForKatsaggelos';
 inputData.fileName1='Han_20160325_RW_hold_area2_001';
 
@@ -181,6 +181,7 @@ inputData.mapFile1='mapFile/media/fsmresfiles/limblab/lab_folder/Animal-Miscella
 inputData.lab=6;
 
 inputData.binMethod='gaussian';
+inputData.kernelWidth=.2;
 
 dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
 %% export data for katsaggelos group
@@ -215,7 +216,7 @@ function_name='testEncoderSkips';
 data_struct=run_data_processing(function_name,folderpath);
 
 %% process stimulation artifacts:
-folderpath='/media/tucker/My Passport/local processing/stimTesting/20170105_chips/1ch_50uA/';
+folderpath='/media/tucker/My Passport/local processing/chips/experiment_20170124_fastsettle_delay_testing/53us/';
 functionName='processStimArtifact';
 
 inputData.task='tasknone';
@@ -232,9 +233,9 @@ inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161020_saline/1025-0370.cmp';
 %saline2
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
-inputData.windowSize=30*5;%in points
+inputData.windowSize=30*3;%in points
 inputData.presample=5;%in points
-inputData.plotRange=0.300;%in mV
+inputData.plotRange=0.800;%in mV
 inputData.lab=6;
 inputData.useSyncLabel=[];
 dataStruct2 = runDataProcessing(functionName,folderpath,inputData);

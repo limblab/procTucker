@@ -104,7 +104,7 @@ for trial = 1:num_trials-1
             stim_code = -1;
         end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
-%paste from mastercon code to ensure matching when extracting data from
+%from mastercon code to ensure matching when extracting data from
 %databurst:
 % 2         db->addByte(DATABURST_VERSION);
 % 3         db->addByte('2');

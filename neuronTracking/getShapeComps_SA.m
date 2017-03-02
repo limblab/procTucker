@@ -23,6 +23,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units,data,SNRThres
     unitsThreshold=[units.data.lowThreshold];
     unitsMinMaxTics=nan(numUnits,1);
     unitsMinMaxTicsStd=nan(numUnits,1);
+    numData=numel(data);
     unitsLogNEO=nan(numData,1);
     unitsLogNEOStd=nan(numData,1);
     for i=1:numUnits
@@ -30,30 +31,35 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units,data,SNRThres
             %don't bother with invalid or unsorted
             continue
         end
+        disp(['working on unit:',num2str(i)])
         unitsMean(i,:)=mean(units.data(i).spikes.wave);
         unitsStdev(i,:)=std(units.data(i).spikes.wave);
         unitsCount(i)=size(units.data(i).spikes,1);
         threshCross=find(unitsMean(i,:)<unitsThreshold(i),1,'first');
         [~,~,~,minima]=extrema(unitsMean(i,:));
         firstMin=find(sort(minima)>threshCross,1,'first');
-        unitsShift(i)=firstMin-units.appendConfig.alignPoint;
-        [~,mx,~,mn]=arrayfun(@(wNum) extrema(units.data(i).spikes.wave(wNum)),1:size(units.data(i).spikes.wave,1),'UniformOutput',false);
-        %mx and mn are cell arrays of minima/maxima, get them into a
-        %matrix:
-        mxArr=sort(cell2mat(mx'),2);
-        mnArr=sort(cell2mat(mn'),2);
+        unitsShift(i)=firstMin-units.appendConfig.thresholdPoint;
+        %the following arrayfun call is ~4x slower than the for-loop that
+        %comes after it
+        %[~,mx,~,mn]=arrayfun(@(wNum) extrema(units.data(i).spikes.wave(wNum,:)),1:size(units.data(i).spikes.wave,1),'UniformOutput',false);
+        mx=cell(1,size(units.data(i).spikes.wave,1));
+        mn=cell(1,size(units.data(i).spikes.wave,1));
+        for j=1:size(units.data(i).spikes.wave,2)
+            [~,mx{j},~,mn{j}]=extrema(units.data(i).spikes.wave(j,:));
+        end
+        
         %get the first minima after threshold:
         for j=1:size(mn,1)
-            minIdx(j)=mnArr(j,find(mnArr(j,:)>unitsThreshold(i),1,'first'));
+            minIdx(j)=mn{j}(find(mn{j}>unitsThreshold(i),1,'first'));
             if isempty(minIdx)
-                minIdx(j)=mxArr(j,end);
+                minIdx(j)=unitsThreshold(i);
             end
         end
         %get the first maxima after the first minima:
         for j=1:size(mx,1)
-            maxIdx(j)=mxArr(j,find(mxArr(j,:)>minIdx,1,'first'));
-            if isempty(minIdx)
-                maxIdx(j)=mxArr(j,end);
+            maxIdx(j)=mx{j}(find(mx{j}>minIdx,1,'first'));
+            if isempty(maxIdx)
+                maxIdx(j)=minIdx;
             end
         end
         
@@ -62,7 +68,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units,data,SNRThres
         logNEO=log(  sum(   ...
                         [unitsMean(i,1),unitsMean(i,:),unitsMean(i,end)].*[unitsMean(i,1),unitsMean(i,:),unitsMean(i,end)]...
                         -[unitsMean(i,1),unitsMean(i,1),unitsMean(i,:)].*[unitsMean(i,:),unitsMean(i,end),unitsMean(i,end)]...
-                        ,2));
+                        ,2));%this is the nonlinear energy operator
         unitsLogNEO(i)=mean(logNEO);
         unitsLogNEOStd(i)=std(logNEO);
     end
@@ -82,12 +88,11 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units,data,SNRThres
     unitsInUnits=unitsInUnits(mask);
     unitsThreshold=unitsThreshold(mask);
     unitsMinMaxTics=unitsMinMaxTics(mask);
-    unitsMinMaxTicsStd=UnitsMinMaxTicsVar(mask);
+    unitsMinMaxTicsStd=unitsMinMaxTicsStd(mask);
     unitsLogNEO=unitsLogNEO(mask);
     unitsLogNEOStd=unitsLogNEOStd(mask);
     %now work on the data
     disp('compiling sorted units already in new data')
-    numData=numel(data);
     dataMean=nan(numData,size(data(1).spikes.wave,2));
     dataStdev=dataMean;
     dataShift=nan(numData,1);
@@ -104,30 +109,34 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units,data,SNRThres
         if(data(i).ID==0 || data(i).ID==255)
             continue
         end
+        disp(['working on unit:',num2str(i)])
         dataMean(i,:)=mean(data(i).spikes.wave);
         dataStdev(i,:)=std(data(i).spikes.wave);
         dataCount(i)=size(data(i).spikes,1);
         threshCross=find(unitsMean(i,:)<unitsThreshold(i),1,'first');
         [~,~,~,minima]=extrema(dataMean(i,:));
         firstMin=find(sort(minima)>threshCross,1,'first');
-        dataShift(i)=firstMin-units.appendConfig.alignPoint;
-        [~,mx,~,mn]=arrayfun(@(wNum) extrema(data(i).spikes.wave(wNum)),1:size(data(i).spikes.wave,1),'UniformOutput',false);
-        %mx and mn are cell arrays of minima/maxima, get them into a
-        %matrix:
-        mxArr=sort(cell2mat(mx'),2);
-        mnArr=sort(cell2mat(mn'),2);
+        dataShift(i)=firstMin-units.appendConfig.thresholdPoint;
+        %the following arrayfun call is ~4x slower than the for-loop that
+        %comes after it
+        %[~,mx,~,mn]=arrayfun(@(wNum) extrema(data(i).spikes.wave(wNum,:)),1:size(data(i).spikes.wave,1),'UniformOutput',false);
+        mx=cell(1,size(data(i).spikes.wave,1));
+        mn=cell(1,size(data(i).spikes.wave,1));
+        for j=1:size(data(i).spikes.wave,1)
+            [~,mx{j},~,mn{j}]=extrema(data(i).spikes.wave(j,:));
+        end
         %get the first minima after threshold:
         for j=1:size(mn,1)
-            minIdx(j)=mnArr(j,find(mnArr(j,:)>dataThreshold(i),1,'first'));
+            minIdx(j)=mn{j}(find(mn{j}>dataThreshold(i),1,'first'));
             if isempty(minIdx)
-                minIdx(j)=mxArr(j,end);
+                minIdx(j)=dataThreshold(i);
             end
         end
         %get the first maxima after the first minima:
         for j=1:size(mx,1)
-            maxIdx(j)=mxArr(j,find(mxArr(j,:)>minIdx,1,'first'));
+            maxIdx(j)=mx{j}(find(mx{j}>minIdx,1,'first'));
             if isempty(minIdx)
-                maxIdx(j)=mxArr(j,end);
+                maxIdx(j)=minIdx;
             end
         end
         
@@ -136,7 +145,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units,data,SNRThres
         logNEO=log(  sum(   ...
                         [dataMean(i,1),dataMean(i,:),dataMean(i,end)].*[dataMean(i,1),dataMean(i,:),dataMean(i,end)]...
                         -[dataMean(i,1),dataMean(i,1),dataMean(i,:)].*[dataMean(i,:),dataMean(i,end),dataMean(i,end)]...
-                        ,2));
+                        ,2));%this is the nonlinear eneergy operator
         dataLogNEO(i)=mean(logNEO);
         dataLogNEOStd(i)=std(logNEO);
     end

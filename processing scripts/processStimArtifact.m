@@ -28,7 +28,7 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
     eList={};
     posList=[];
     chList=[];
-    if RDPIsAlreadyDone('artifactData',folderpath)
+    if RDPIsAlreadyDone('artifactData',folderpath) && ~inputData.forceReload
         warning('processStimArtifact:foundExistingData','loading data from previous processing. This will have the PREVIOUS settings for time window, presample etc')
         artifactData =RDPLoadExisting('artifactData',folderpath);
         eList =RDPLoadExisting('eList',folderpath);
@@ -253,7 +253,7 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
             %add background fill for stimulus:
             %assumes 200us/phase+53us interpulse and rounds up to the next
             %1s/30000 tick
-            stimLength=ceil((.0002*2+.000053)*30000);
+            stimLength=ceil((inputData.pWidth1+inputData.pWidth2+inputData.interpulse)*30000);
             stimFillBox=[inputData.presample, -8200;...
                             inputData.presample, 8200;...
                             inputData.presample+stimLength, 8200;...
@@ -287,6 +287,15 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
                 stimBoxX=[2,                    .95*size(artifactData(i).artifact,3),    .95*size(artifactData(i).artifact,3),    2,                      2];
                 stimBoxY=[-inputData.plotRange*.95*1000, -inputData.plotRange*.95*1000,       inputData.plotRange*.95*1000,        inputData.plotRange*.95*1000,    -inputData.plotRange*.95*1000];
                 plot(stimBoxX,stimBoxY,'mp-','linewidth',3)
+            end
+            if find(chList(posIdx)==inputData.badChList,1,'first')
+                %put a red X through known bad channels:
+                badMarkX=[2,.95*size(artifactData(i).artifact,3)];
+                badMarkY=[-inputData.plotRange*.95*1000,inputData.plotRange*.95*1000];
+                plot(badMarkX,badMarkY,'rp-','lineWidth',3)
+                badMarkX=[2,.95*size(artifactData(i).artifact,3)];
+                badMarkY=[inputData.plotRange*.95*1000,-inputData.plotRange*.95*1000];
+                plot(badMarkX,badMarkY,'rp-','lineWidth',3)
             end
             %plot the pulses: cathodal red, anodal blue
             oneFill=ones(sum(cathodalMask),1);

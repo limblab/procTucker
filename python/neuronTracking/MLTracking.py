@@ -46,7 +46,6 @@ math.keys()
 def poisson_pseudoR2(y, yhat, ynull):
     eps = np.spacing(1)
     L1 = np.sum(y*np.log(eps+yhat) - yhat)
-    L1_v = y*np.log(eps+yhat) - yhat
     L0 = np.sum(y*np.log(eps+ynull) - ynull)
     LS = np.sum(y*np.log(eps+y) - y)
     R2 = 1-(LS-L1)/(LS-L0)
