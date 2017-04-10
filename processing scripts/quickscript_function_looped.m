@@ -31,7 +31,8 @@ else
                         %if we haven't found a .mat file to match the .nev then make
                         %one
                         NEVNSx=cerebus2NEVNSx(tempfolder, tempname);
-                        bdf=get_nev_mat_data(NEVNSx,'verbose','noeye','noforce','nokin',input_data.labnum);
+                        %bdf=get_nev_mat_data(NEVNSx,'verbose','noeye','noforce','nokin',input_data.labnum);
+                        bdf=get_nev_mat_data(NEVNSx,'noeye','noforce','nokin',input_data.labnum);
                         bdf.meta.task='BC';
                         data_struct.(tempname(tempname~='-'))=bdf;
                         bdf_list{end+1}=bdf;

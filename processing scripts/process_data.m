@@ -1,12 +1,12 @@
 %script to set input data and execute data processing
 %% process psyhcometrics
-folderpath='/media/tucker/My Passport/local processing/chips/experiment_20170118-20_BD/';
+folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170407_43degTgt/';
 function_name='quickscript_function_looped';
-input_data.matchstring='chips';
+input_data.matchstring='Han';
 input_data.labnum=6;
 input_data.stimcodes=[0 1 2 3];
 input_data.num_stim_cases=4;
-input_data.currents=[5000 10000 15000 20000];
+input_data.currents=[30000 30001 30002 30003];
 input_data.current_units='pA';
 run_data_processing(function_name,folderpath,input_data)
 %% psychometrics for stimcodes 0,1 2 all stim 4 electrods @ 20uA, and codes 3-6 stim 1 different elctrode at 40uA
@@ -31,21 +31,21 @@ input_data.matchstring='Kramer';
 folderpath='E:\local_processing\kramer\experiment_20130305_0322_BD_70degstim';
 run_data_processing(function_name,folderpath,input_data)
 %% process PDs
-folderpath='E:\local processing\chips\experiment_20160105_RW_PD';
-input_data.filename='Chips_20160105_RW_tucker_001.nev';
-input_data.matchstring='Chips';
+folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170403_RW_oldPD/';
+input_data.filename='Han_20170403_RW_tucker_001-s.nev';
+input_data.matchstring='Han';
 function_name='get_move_pds_function';
 input_data.labnum=6;
-input_data.array_map_path='Y:\lab_folder\Animal-Miscellany\Chips_12H1\map_files\SN6251-001266.cmp';
+input_data.array_map_path='/media/tucker/My Passport/local processing/Han/experiment_20170403_RW_oldPD/SN 6251-001459.cmp';
 data_struct = run_data_processing(function_name,folderpath,input_data);
 
 %% process PDs using Raeed/Tucker functions
-folderpath='E:\local processing\chips\experiment_20160202_RW_PD';
-input_data.prefix='Chips_20160128_RW_tucker_001-01';
+folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170403_RW_PD/';
+input_data.prefix='Han_20170403_RW_tucker_001-s';
 function_name='get_PDs';
 input_data.labnum=6;
-input_data.do_unit_pds=1;
-input_data.do_electrode_pds=0;
+input_data.do_unit_pds=0;
+input_data.do_electrode_pds=1;
 input_data.only_sorted=1;
 input_data.task='RW';
 input_data.offset=-.015;%latency from neural action to motor effect
@@ -216,7 +216,7 @@ function_name='testEncoderSkips';
 data_struct=run_data_processing(function_name,folderpath);
 
 %% process stimulation artifacts:
-folderpath='/media/tucker/My Passport/local processing/chips/experiment_20170124_fastsettle_delay_testing/53us/';
+folderpath='/media/tucker/My Passport/local processing/chips/experiment_20170220_unbalancedPulseStim/narrowWindow/figuresForGrantProgressReport/';
 functionName='processStimArtifact';
 
 inputData.task='tasknone';
@@ -233,7 +233,7 @@ inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161020_saline/1025-0370.cmp';
 %saline2
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
-inputData.windowSize=30*3;%in points
+inputData.windowSize=30*15;%in points
 inputData.presample=5;%in points
 inputData.plotRange=0.800;%in mV
 inputData.lab=6;

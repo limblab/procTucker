@@ -420,16 +420,16 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
             set(h,'Visible','on'); 
         end
     end
-    %% now export figures directly to png so we don't hit the print command quite so often
-    for i=1:numel(outputFigures)
-        %save a png of the figure
-        fname=get(outputFigures(i),'Name');
-        if isempty(fname)
-            fname=strcat('Figure_',num2str(double(H)));
-        end
-        fname(fname==' ')='_';%replace spaces in name for saving
-        print('-dpng',outputFigures(i),strcat(folderpath,['Raw_Figures' filesep 'PNG' filesep],fname,'.png'))
-    end
-    outputFigures=[];
+%     %% now export figures directly to png so we don't hit the print command quite so often
+%     for i=1:numel(outputFigures)
+%         %save a png of the figure
+%         fname=get(outputFigures(i),'Name');
+%         if isempty(fname)
+%             fname=strcat('Figure_',num2str(double(H)));
+%         end
+%         fname(fname==' ')='_';%replace spaces in name for saving
+%         print('-dpng',outputFigures(i),strcat(folderpath,['Raw_Figures' filesep 'PNG' filesep],fname,'.png'))
+%     end
+%     outputFigures=[];
 end
 
