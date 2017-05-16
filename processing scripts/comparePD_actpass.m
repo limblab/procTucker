@@ -4,7 +4,7 @@ function [figureList,dataStruct]=comparePD_actpass(folderpath,inputData)
     if ~strcmp(folderpath(end),filesep)
         folderpath=[folderpath,filesep];
     end
-    cds.file2cds([folderpath,inputData.fileName],inputData.ranBy,inputData.array,inputData.monkey,inputData.lab,'ignoreJumps',inputData.task);
+    cds.file2cds([folderpath,inputData.fileName],inputData.ranBy,inputData.array,inputData.monkey,inputData.lab,'ignoreJumps',inputData.task,inputData.mapFile);
 
     dataStruct.cds=cds;
 %% create new experiment object
@@ -147,7 +147,7 @@ function [figureList,dataStruct]=comparePD_actpass(folderpath,inputData)
     title('Force PD: during reaching vs during bumps')
     ylabel('PD during reach')
     xlabel('PD during bump')
-    format_for_lee(figureList(end))
+    %format_for_lee(figureList(end))
     %plot act vs pass vel PD
     figureList(end+1)=figure;
     plot(ex.analysis(2).data.velDir,ex.analysis(4).data.velDir,'xk')
@@ -159,7 +159,7 @@ function [figureList,dataStruct]=comparePD_actpass(folderpath,inputData)
     title('Vel PD: during reaching vs during bumps')
     ylabel('PD during reach')
     xlabel('PD during bump')
-    format_for_lee(figureList(end))
+    %format_for_lee(figureList(end))
     %plot act move vs force PD
     figureList(end+1)=figure;
     plot(ex.analysis(3).data.forceDir,ex.analysis(4).data.velDir,'xk')
@@ -171,7 +171,7 @@ function [figureList,dataStruct]=comparePD_actpass(folderpath,inputData)
     title('Vel PD vs Force PD, during reaching')
     ylabel('vel PD')
     xlabel('force PD')
-    format_for_lee(figureList(end))
+    %format_for_lee(figureList(end))
     %plot pass move vs force PD
     figureList(end+1)=figure;
     plot(ex.analysis(1).data.forceDir,ex.analysis(2).data.velDir,'xk')
@@ -183,7 +183,7 @@ function [figureList,dataStruct]=comparePD_actpass(folderpath,inputData)
     title('Vel PD vs Force PD, during bumps')
     ylabel('PD during reach')
     xlabel('PD during bump')
-    format_for_lee(figureList(end))
+    %format_for_lee(figureList(end))
     
     
     

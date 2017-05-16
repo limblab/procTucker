@@ -1,12 +1,12 @@
 %script to set input data and execute data processing
 %% process psyhcometrics
-folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170407_43degTgt/';
+folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170425-28_BD_2degPD/';
 function_name='quickscript_function_looped';
 input_data.matchstring='Han';
 input_data.labnum=6;
-input_data.stimcodes=[0 1 2 3];
+input_data.stimcodes=[0 1 2 3 5];
 input_data.num_stim_cases=4;
-input_data.currents=[30000 30001 30002 30003];
+input_data.currents=[30000 30001 30002 30003 30004 ];
 input_data.current_units='pA';
 run_data_processing(function_name,folderpath,input_data)
 %% psychometrics for stimcodes 0,1 2 all stim 4 electrods @ 20uA, and codes 3-6 stim 1 different elctrode at 40uA
@@ -37,7 +37,7 @@ input_data.matchstring='Han';
 function_name='get_move_pds_function';
 input_data.labnum=6;
 input_data.array_map_path='/media/tucker/My Passport/local processing/Han/experiment_20170403_RW_oldPD/SN 6251-001459.cmp';
-data_struct = run_data_processing(function_name,folderpath,input_data);
+data_struct = runDataProcessing(function_name,folderpath,input_data);
 
 %% process PDs using Raeed/Tucker functions
 folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170403_RW_PD/';
@@ -54,16 +54,16 @@ input_data.vel_pd=1;%default flag is 1
 input_data.force_pd=0;%default flag is 0
 data_struct2 = run_data_processing(function_name,folderpath,input_data);
 %% actVSpass pd comparison
-folderpath='/media/tucker/Iomega HDD/local processing/chips/experiment_20160620_CObump_PD/';
+folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170502_COBump_PD/';
 functionName='comparePD_actpass';
-inputData.fileName='Chips_20160620_COBump_area2_tucker_001';
+inputData.fileName='Han_20170502_COBump_tucker001.nev';
 inputData.task='taskCObump';
 inputData.ranBy='ranByTucker'; 
 inputData.array='arrayS1Area2';
-inputData.monkey='monkeyChips';
-inputData.mapFile='mapFile/media/tucker/Iomega HDD/local processing/chips/mapFile/SN 6251-001455.cmp';
+inputData.monkey='monkeyHan';
+inputData.mapFile='mapFile/media/tucker/My Passport/local processing/Han/experiment_20170403_RW_oldPD/SN 6251-001459.cmp';
 inputData.lab=6;
-data_struct=run_data_processing(functionName,folderpath,inputData);
+data_struct=runDataProcessing(functionName,folderpath,inputData);
 %% new data format PD's from CO bump task:
 folderpath='/media/tucker/My Passport/local processing/chips/experiment_20161018_COBump_bumpArtifactTesting/';
 functionName='CObump_tuning';
