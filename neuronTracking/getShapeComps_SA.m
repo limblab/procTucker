@@ -267,6 +267,8 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     
     %use the mask to get a list of differences in wavespace
     diffs=abs(waveMat(repmat(~mask,[1,1,numPoints])));
+    % use only the gains that are greater than 1;
+    alphaMat = max(alphaMat,alphaMat');
     %convert alpha into 1 sided distribution:
     alphaMat(mask)=nan;%set all the stuff we aren't going to use to nan, so that we don't try to call log(-1) or something
 
@@ -288,7 +290,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     %convert CI into stdev for the scaling factor. Remember to convert CI
     %values for alphas<1 so the CI range matches the range for the
     %converted alpha:
-    alphaStdMat=abs(diff(alphaCIMat,1,3))/(2*1.96);
+    alphaStdMat=abs(diff(alphaCIMat,1,3))/(2*1.96); % 1.96? from what?
     %get the stdev for the minMaxTics
     ticsStdMat=ticsStdMat.*spikesMat(:,:,1);
     ticsStdMat=ticsStdMat+ticsStdMat';
@@ -299,7 +301,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     NEOStdMat=NEOStdMat+NEOStdMat';
     
     %convert the 3D standard deviation matrix into a 2D matrix to match the
-    %diffs matrix. Again, we add on the value for the alpha
+    %diffs matrix. Again, we add on the value for the alpha, tics, and NEO
     stdevs=stdevMat(repmat(~mask,[1,1,numPoints]));
     stdevs=[reshape(stdevs,numel(stdevs)/numPoints,numPoints),alphaStdMat(~mask),ticsStdMat(~mask),NEOStdMat(~mask)];
     
