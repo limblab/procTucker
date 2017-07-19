@@ -178,6 +178,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     mask=(~isnan(dataCount) & ... stuff leftover from units 0 and 255
             dataChans'<128 & ... sorted units on the analog front panel of the cerebus
             SNR>=SNRThresh);% lowSNR units
+        
 
     dataMean=dataMean(mask,:);
     dataStdev=dataStdev(mask,:);
@@ -205,7 +206,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     allMinMaxTicsVar=[unitsMinMaxTicsStd;dataMinMaxTicsStd];
     allLogNEO=[unitsLogNEO;dataLogNEO];
     allLogNEOVar=[unitsLogNEOStd;dataLogNEOStd];
-    %now align the means and stdevs to first minima after threshols to take 
+    %now align the means and stdevs to first minima after threshold to take 
     %care of cases where the user aligned waves to peak in offline sorter. the
     %following line is ugly, but it simply extracts the relevant portion of
     %the wave, truncating the part shifted outside the range of the wave,
@@ -248,7 +249,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     waveMat=waveMat-permute(waveMat,[2,1,3]).*repmat(alphaMat,[1,1,numPoints]);
     %create an upper triangular mask excluding the self comparisons and 
     %the bottom half
-    mask=triu(true(numWaves),1);
+    mask=triu(true(numWaves));
     %further mask any comparisons with a negative scaling factor- if the
     %units are inverted we know they aren't the same thing
     mask=mask | alphaMat<0;
@@ -262,10 +263,12 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     threshMat=min(threshMat,threshMat');%minimum of the 2 thresholds involved in the comparison
     minMat=repmat(min(allMean,[],2),[1,numWaves]);
     minMat=max(minMat,minMat');%smaller excursion of the two waves
-    mask=mask | (minMat-double(threshMat))<0;
+    mask=mask | (minMat-double(threshMat))>0;
     
     %use the mask to get a list of differences in wavespace
     diffs=abs(waveMat(repmat(~mask,[1,1,numPoints])));
+    % use only the gains that are greater than 1;
+    alphaMat = max(alphaMat,alphaMat');
     %convert alpha into 1 sided distribution:
     alphaMat(mask)=nan;%set all the stuff we aren't going to use to nan, so that we don't try to call log(-1) or something
 
@@ -287,7 +290,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     %convert CI into stdev for the scaling factor. Remember to convert CI
     %values for alphas<1 so the CI range matches the range for the
     %converted alpha:
-    alphaStdMat=abs(diff(alphaCIMat,1,3))/(2*1.96);
+    alphaStdMat=abs(diff(alphaCIMat,1,3))/(2*1.96); % 1.96? from what?
     %get the stdev for the minMaxTics
     ticsStdMat=ticsStdMat.*spikesMat(:,:,1);
     ticsStdMat=ticsStdMat+ticsStdMat';
@@ -298,7 +301,7 @@ function [coeff,diffDist,matchDist,empDist]=getShapeComps_SA(units1,units2,SNRTh
     NEOStdMat=NEOStdMat+NEOStdMat';
     
     %convert the 3D standard deviation matrix into a 2D matrix to match the
-    %diffs matrix. Again, we add on the value for the alpha
+    %diffs matrix. Again, we add on the value for the alpha, tics, and NEO
     stdevs=stdevMat(repmat(~mask,[1,1,numPoints]));
     stdevs=[reshape(stdevs,numel(stdevs)/numPoints,numPoints),alphaStdMat(~mask),ticsStdMat(~mask),NEOStdMat(~mask)];
     
