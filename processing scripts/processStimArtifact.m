@@ -40,7 +40,8 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
             disp(['working on:'])
             disp(fileList(i).name)
             cds=commonDataStructure();
-            cds.file2cds([folderpath,fileList(i).name],inputData.ranBy,inputData.array1,inputData.monkey,inputData.lab,'ignoreJumps',inputData.task,inputData.mapFile,'recoverPreSync');
+%             cds.file2cds([folderpath,fileList(i).name],inputData.ranBy,inputData.array1,inputData.monkey,inputData.lab,'ignoreJumps',inputData.task,inputData.mapFile,'recoverPreSync');
+            cds.file2cds([folderpath,fileList(i).name],inputData.ranBy,inputData.array1,inputData.monkey,inputData.lab,'ignoreJumps',inputData.task,inputData.mapFile);
             %% find sync signal in analog data
             useSync=true;
             aIdx=[];
@@ -230,6 +231,9 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
     end
     
     %% plot the artifacts for each stim channel:
+    if isfield(inputData,'doFigures') && ~inputData.doFigures
+        return
+    end
 %     stimChansFig=figure;
     for i=1:numel(artifactData)
     %    disp(['plotting stim:',num2str(i)])
@@ -278,9 +282,9 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
             plot([1,1]*(inputData.presample+45),[8200,-8200],'b')
             %identify which artifacts are from cathodal first pulses:
             cathodalMask=false(numel(artifactData(i).stimOn),1);
-            cathodalMask([1:10:numel(artifactData(i).stimOn)])=true;
+            cathodalMask([1:2:numel(artifactData(i).stimOn)])=true;
             anodalMask=false(numel(artifactData(i).stimOn),1);
-            anodalMask([2:10:numel(artifactData(i).stimOn)])=true;
+            anodalMask([2:2:numel(artifactData(i).stimOn)])=true;
             %make corlormasks for the  cathodal and anodal pulses
             if chList(posIdx)==artifactData(i).stimChannel
                 %put a purple box around the stim channel:

@@ -2,7 +2,9 @@ function [figureList,outputData]=parseForKatsaggelos(folderpath,inputData)
     figureList=[];
     outputData=[];
     %% initial loading of data
-    if RDPIsAlreadyDone('cds',folderpath)
+    if strcmp(inputData.fileName1(end-3:end),'.mat')
+        load([folderpath,inputData.fileName1])
+    elseif RDPIsAlreadyDone('cds',folderpath)
         disp('loading prevously computed cds')
         cds=RDPLoadExisting('cds',folderpath);
     else
@@ -31,7 +33,7 @@ function [figureList,outputData]=parseForKatsaggelos(folderpath,inputData)
     ex.binConfig.include(2).field='kin';
     ex.binConfig.include(2).which={};
     ex.binConfig.include(3).field='analog';
-    ex.binConfig.include(3).which=ex.analog(3).data.Properties.VariableNames(2:end);%kinect data\
+    ex.binConfig.include(3).which=ex.analog(end).data.Properties.VariableNames(2:end);%kinect data\
     
      % set firingRateConfig parameters
         ex.firingRateConfig.cropType='tightCrop';
@@ -44,7 +46,7 @@ function [figureList,outputData]=parseForKatsaggelos(folderpath,inputData)
         disp('binning data')
         ex.binData()
     %% configure weiner filter
-    disp('compting weiner filter on full data')
+    disp('computing weiner filter on full data')
     whichUnits=find([ex.units.data.ID]>0 & [ex.units.data.ID]<255);
 %     ex.bin.weinerConfig.inputList=ex.units.getUnitName(whichUnits);
 %     ex.bin.weinerConfig.outputList=[{'x','y','vx','vy','ax','ay'},ex.binConfig.include(3).which];

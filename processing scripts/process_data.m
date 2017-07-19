@@ -169,19 +169,24 @@ input_data.matchstring='Pedro';
 input_data.labnum=2;
 data_struct = run_data_processing(function_name,folderpath,input_data);
 %% parse file for katsaggelos group using commonDataStructure:
-folderpath='/media/tucker/My Passport/local processing/Han/experiment_20160325_RW_hold/';
+folderpath='/media/tucker/My Passport/local processing/chips/experiment_20151203_RW_forKatsaggelosGrp/';
 functionName='parseForKatsaggelos';
-inputData.fileName1='Han_20160325_RW_hold_area2_001';
+inputData.fileName1='Chips_20151203_RW_002_CDS.mat';
 
 inputData.task='taskRW';
 inputData.ranBy='ranByRaeed'; 
 inputData.array1='arrayArea2'; 
-inputData.monkey='monkeyHan';
-inputData.mapFile1='mapFile/media/fsmresfiles/limblab/lab_folder/Animal-Miscellany/Han_13B1/map files/Left S1/SN 6251-001459.cmp';
+inputData.monkey='monkeyChips';
+%han
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
+%chips
+inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
+%lando
+% inputData.mapFile='/media/tucker/My Passport/local processing/lando/SN 6251-001701.cmp';
 inputData.lab=6;
 
-inputData.binMethod='gaussian';
-inputData.kernelWidth=.2;
+inputData.binMethod='bin';
+inputData.kernelWidth=.05;
 
 dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
 %% export data for katsaggelos group
@@ -291,3 +296,27 @@ inputData.maxImpedance=100;
 inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
 runDataProcessing(functionName,folderPath,inputData)
 %% unit tracking study
+
+%% efference copy dimensionality reduction analysis
+folderpath='/media/tucker/My Passport/local processing/Han/20160415_CObump_efferenceCopy/';
+functionName='efferenceCopyAnalysis';
+
+inputData.task='taskCObump';
+inputData.ranBy='ranByTucker'; 
+inputData.array1='arrayS1'; 
+inputData.monkey='monkeyHan';
+%han
+inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
+%chips
+% inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
+%chewie
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161205_chewie_PMDStim_PMD-recording/Chewie Left PMd SN 6251-001469.cmp';
+%saline
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161020_saline/1025-0370.cmp';
+%saline2
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
+
+inputData.lab=6;
+
+inputData.rootTransform=true;
+dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
