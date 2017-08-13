@@ -298,7 +298,7 @@ runDataProcessing(functionName,folderPath,inputData)
 %% unit tracking study
 
 %% efference copy dimensionality reduction analysis
-folderpath='/media/tucker/My Passport/local processing/Han/20160415_CObump_efferenceCopy/';
+folderpath='/media/tucker/My Passport/local processing/Han/efferenceCopy/20160415_CObump_efferenceCopy/';
 functionName='efferenceCopyAnalysis';
 
 inputData.task='taskCObump';
@@ -320,3 +320,16 @@ inputData.lab=6;
 
 inputData.rootTransform=true;
 dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
+
+%% check CV effect on impedance
+folderPath='/media/tucker/My Passport/local processing/chips/MET16_testing/20170807_CV_effect/';
+functionName='checkCVEffect';
+inputData=[];
+
+dataStruct=runDataProcessing(functionName,folderPath,inputData)
+%% check EIS stability over multiple recordings:
+folderPath='/media/tucker/My Passport/local processing/chips/MET16_testing/20170809_EIS_variability/';
+functionName='checkEISStability';
+inputData=[];
+
+dataStruct=runDataProcessing(functionName,folderPath,inputData)

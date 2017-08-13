@@ -25,10 +25,16 @@ function [H]=plotLikelihoodClassData(classData,plotData,varargin)
     H=figure;
     hold on
     for i=1:numel(classData.classList)
+        %plot the data points, * for correct guesses, o for errors:
         classMask=classData.class==classData.classList(i) & classData.correct;
          plot(plotData.reducedData(classMask,1),plotData.reducedData(classMask,2),'*','color',colorSet(i,:))
         classMask=classData.class==classData.classList(i) & ~classData.correct;
          plot(plotData.reducedData(classMask,1),plotData.reducedData(classMask,2),'o','color',colorSet(i,:))
+         %draw an ellipse around the cluster:
+         %start by finding the major and minor axis of the data:
+         classMask=classData.class==classData.classList(i);
+         [coeffs]=pca(plotData.reducedData(classMask));
+         
     end
     if doLegend
         legend(legendStrings)

@@ -57,7 +57,7 @@ function [ outputFigures,outputData ] = efferenceCopyAnalysis(folderpath, inputD
                                         ~ex.trials.data.delayBump);         %only look at trials that do not have a bump during the delay period
                                     
     %% set up dimensionality reduction configuration                                
-    ex.bin.dimReductionConfig.windows=[moveTime-.4,moveTime-.3];
+    ex.bin.dimReductionConfig.windows=[moveTime-.4,moveTime-.2];
     ex.bin.dimReductionConfig.which=12:numel(find([ex.units.data.ID]>0 & [ex.units.data.ID]<255 ))+11;
     ex.bin.dimReductionConfig.dimension=numel(ex.bin.dimReductionConfig.which);
     
@@ -77,9 +77,10 @@ function [ outputFigures,outputData ] = efferenceCopyAnalysis(folderpath, inputD
     end
     tgtDir=round(tgtDir);
     tgtDirList=unique(tgtDir);
-    for i=1:2:numel(tgtDirList)*2
-        legendStrings{i}=[num2str(tgtDirList((i+1)/2)),'deg correct'];
-        legendStrings{i+1}=[num2str(tgtDirList((i+1)/2)),'deg error'];
+    for i=1:3:numel(tgtDirList)*3
+        legendStrings{i}=[num2str(tgtDirList((i+2)/3)),'deg correct'];
+        legendStrings{i+1}=[num2str(tgtDirList((i+2)/3)),'deg error'];
+        legendStrings{i+2}='';
     end
     
     %% get a cell array of window vectors where each vector only contains trials for a single target direction
@@ -91,47 +92,156 @@ function [ outputFigures,outputData ] = efferenceCopyAnalysis(folderpath, inputD
         trialIdx=find(ex.trials.data.startTime<windowsBase(i,1) & ex.trials.data.endTime>windowsBase(i,2),1,'first');
         tgts(i)=ex.trials.data.tgtDir(trialIdx);
     end
+    %% perform analysis in full neural feature space:
+    %get perfromance of matlab builtin functions:
+    [~,outputData.classData.classifyErr]=classify(DRData,DRData,tgtDir);
+    discrModel=fitcdiscr(DRData,tgtDir);
+    pred=predict(discrModel,DRData);
+    outputData.classData.fitdiscrErr=sum(pred==tgtDir)/numel(tgtDir);
+    %do tuckers wonky classifier:
+    [outputData.classData,outputData.plotData]=likelihoodClassify(DRData,tgtDir);
+    outputFigures(end+1)=plotClassData(outputData.plotData.reducedData,outputData.classData.class,'correct',outputData.classData.fullModelCorrect,'legend',legendStrings,'title','Pre-Move: clusters in log-likelihood ratio space for full neural analysis','name','unreducedClusters');
+    disp(['fit full data with success rate: ',num2str(outputData.classData.fullModelCorrect), ' and overfitting rate: ',num2str(outputData.classData.overfit)])
+
     
     %% run PCA    
-    if inputData.rootTransform
-        ex.bin.fitPCA('MachensFloor',tgts,'rootTransform',true);
-        ex.analysis(end).notes='full data PCA, root transform firing rates';
-    else
-        ex.bin.fitPCA('MachensFloor',tgts,'rootTransform',false);
-        ex.analysis(end).notes='full data PCA, non-transformed firing rates';
+    ex.bin.fitPCA('MachensFloor',tgts);
+    ex.analysis(end).notes='full data PCA';
+    PCDRData=[DRData(:,2:end)*ex.analysis(end).data.coeff(:,ex.analysis(end).data.MachensFloor.goodPC)];
+    numPCFeatures=sum(ex.analysis(end).data.MachensFloor.goodPC);
+    PCNoise=ex.analysis(end).data.MachensFloor.noise;%for use with PPC and FA analysis
+    
+    %get perfromance of matlab builtin functions:
+    [~,outputData.PCClassData.classifyErr]=classify(PCDRData,PCDRData,tgtDir);
+    discrModel=fitcdiscr(PCDRData.tgtDir);
+    pred=predict(discrModel,PCDRData);
+    outputData.PCClassData.fitdiscrErr=sum(pred==tgtDir)/numel(tgtDir);
+    %do tucker's wonky classifier:
+    [outputData.PCClassData,outputData.PCPlotData]=likelihoodClassify(PCDRData(:,ex.analysis(end).data.MachensFloor.goodPC),tgtDir);
+    outputFigures(end+1)=plotClassData(outputData.PCPlotData.reducedData,outputData.PCClassData.class,'correct',outputData.PCClassData.fullModelCorrect,'legend',legendStrings,'title','Pre-Move: clusters in log-likelihood ratio space for PC analysis','name','PCClusters');
+    disp(['fit PCA Machens reduced data with success rate: ',num2str(outputData.PCClassData.fullModelCorrect), ' and overfitting rate: ',num2str(outputData.PCClassData.overfit)])
+    
+
+%     %% run PPCA
+%     ex.bin.fitPPCA();
+%     ex.analysis(end).notes='full data PPCA';
+%     
+%     %get mask for PPC's based on which eigenvaluse exceed the noise floor:
+%     PPCmask=ex.analysis(end).data.latent>(PCNoise(1:numel(ex.analysis(end).data.latent)));
+%     disp(['found ',num2str(sum(PPCmask)),' PPCs with eigenvalues above the noise floor']);
+%     %convert DRData into PPCA space
+%     PPCDRData=ex.analysis(end).data.stats.Recon;
+%     PPCDRData=PPCDRData(:,PPCmask);
+%     
+%     %get perfromance of matlab builtin functions:
+%     [~,outputData.PPCClassData.classifyErr]=classify(PPCDRData,PPCDRData,tgtDir);
+%     discrModel=fitcdiscr(PPCDRData,tgtDir);
+%     pred=predict(discrModel,PPCDRData);
+%     outputData.PPCClassData.fitdiscrErr=sum(pred==tgtDir)/numel(tgtDir);
+%     %do tucker's wonky classifier:
+%     [outputData.PPCClassData,outputData.PPCPlotData]=likelihoodClassify(PPCDRData,tgtDir);
+%     outputFigures(end+1)=plotClassData(outputData.PPCPlotData.reducedData,outputData.PPCClassData.class,'correct',outputData.PPCClassData.fullModelCorrect,'legend',legendStrings,'title','Pre-Move: clusters in log-likelihood ratio space for PPC analysis','name','PPCClusters');
+%     disp(['fit PPCA reduced data with success rate: ',num2str(outputData.PPCClassData.fullModelCorrect), ' and overfitting rate: ',num2str(outputData.PPCClassData.overfit)])
+% 
+%     
+%     %% run FA
+%     ex.bin.dimReductionConfig.dimension=numPCFeatures;
+%     ex.bin.fitFA();
+%     ex.analysis(end).notes='Factor Analysis';
+%     
+%     FAData=[ex.analysis(end).data.F];%factor loadings
+%         
+%     %get perfromance of matlab builtin functions:
+%     [~,outputData.FAClassData.classifyErr]=classify(FAData,FAData,tgtDir);
+%     discrModel=fitcdiscr(FAData,tgtDir);
+%     pred=predict(discrModel,FAData);
+%     outputData.FAClassData.fitdiscrErr=sum(pred==tgtDir)/numel(tgtDir);
+%     %do tucker's wonky classifier:
+%     [outputData.FAClassData,outputData.FAPlotData]=likelihoodClassify(FAData,tgtDir);
+%     outputFigures(end+1)=plotClassData(outputData.FAPlotData.reducedData,outputData.FAClassData.class,'correct',outputData.FAClassData.fullModelCorrect,'legend',legendStrings,'title','Pre-Move: clusters in log-likelihood ratio space for Factor analysis','name','FAClusters');
+%     disp(['fit FA reduced data with success rate: ',num2str(outputData.FAClassData.fullModelCorrect), ' and overfitting rate: ',num2str(outputData.FAClassData.overfit)])
+% 
+%     
+    %% run DPCA:
+    %construct class table:
+    
+    %% re-run analyses on movment data:
+    %% set up dimensionality reduction configuration                                
+    ex.bin.dimReductionConfig.windows=[moveTime+.1,moveTime+.3];
+    
+    %% get premove data that will be used in the dimensionality reductions, and compute the target directions
+    moveMask=windows2mask(ex.bin.data.t,ex.bin.dimReductionConfig.windows);
+    
+    %% get a cell array of window vectors where each vector only contains trials for a single target direction
+    %will be used with Machen's method to estimate noise floor:
+    windowsBase=ex.bin.dimReductionConfig.windows;
+    %get target directions for each window:
+    tgts=nan(size(windowsBase,1),1);
+    for i=1:size(windowsBase,1);
+        trialIdx=find(ex.trials.data.startTime<windowsBase(i,1) & ex.trials.data.endTime>windowsBase(i,2),1,'first');
+        if ~isempty(trialIdx)
+            tgts(i)=ex.trials.data.tgtDir(trialIdx);
+        end
     end
+    mask=isnan(tgts(:,1));
+    ex.bin.dimReductionConfig.windows(mask,:)=[];
+    tgts(mask)=[];
+    %% find the data and put it in an array:
+    if inputData.rootTransform
+        DRData=[ex.bin.data.t(moveMask),sqrt(ex.bin.data{moveMask,ex.bin.dimReductionConfig.which})];
+    else
+        DRData=ex.bin.data{moveMask,[1,ex.bin.dimReductionConfig.which]};
+    end
+    %get target directions for each observation in the data array
+    tgtDir=nan(size(DRData,1),1);
+    for i=1:size(DRData,1)
+        %find which trial the point was from and add its target direction 
+        %to the tgtDir vector 
+        trialIdx=find(ex.trials.data.startTime<DRData(i,1) ,1,'last');
+        tgtDir(i)=round(ex.trials.data.tgtDir(trialIdx));
+    end
+    %% perform analysis in full neural feature space:
+    [outputData.moveClassData,outputData.movePlotData]=likelihoodClassify(DRData,tgtDir);
+    outputFigures(end+1)=plotClassData(outputData.movePlotData.reducedData,outputData.moveClassData.class,'correct',outputData.moveClassData.fullModelCorrect,'legend',legendStrings,'title','During-Move: clusters in log-likelihood ratio space for full neural analysis','name','unreducedClusters');
+    
+    %% run PCA    
+    ex.bin.fitPCA('MachensFloor',tgts);
+    ex.analysis(end).notes='full data PCA';
 
     PCDRData=[DRData(:,2:end)*ex.analysis(end).data.coeff(:,ex.analysis(end).data.MachensFloor.goodPC)];
     numPCFeatures=sum(ex.analysis(end).data.MachensFloor.goodPC);
     PCNoise=ex.analysis(end).data.MachensFloor.noise;%for use with PPC and FA analysis
     
-    [outputData.PCClassData,outputData.PCPlotData]=likelihoodClassify(PCDRData(:,ex.analysis(end).data.MachensFloor.goodPC),tgtDir);
-    outputFigures(end+1)=plotLikelihoodClassData(outputData.PCClassData,outputData.PCPlotData,'legend',legendStrings,'title','clusters in log-likelihood ratio space for PC analysis','name','PCClusters');
+    [outputData.movePCClassData,outputData.movePCPlotData]=likelihoodClassify(PCDRData(:,ex.analysis(end).data.MachensFloor.goodPC),tgtDir);
+    outputFigures(end+1)=plotClassData(outputData.movePCPlotData.reducedData,outputData.movePCClassData.class,'correct',outputData.movePCClassData.fullModelCorrect,'legend',legendStrings,'title','During-Move: clusters in log-likelihood ratio space for PC analysis','name','PCClusters');
     
-     
-    %% run PPCA
-    ex.bin.fitPPCA();
-    
-    %get mask for PPC's based on which eigenvaluse exceed the noise floor:
-    PPCmask=ex.analysis(end).data.latent>(PCNoise(1:numel(ex.analysis(end).data.latent)));
-    disp(['found ',num2str(sum(PPCmask)),' PPCs with eigenvalues above the noise floor']);
-    %convert DRData into PPCA space
-    PPCDRData=ex.analysis(end).data.stats.Recon;
-    PPCDRData=PPCDRData(:,PPCmask);
-    
-    [outputData.PPCClassData,outputData.PPCPlotData]=likelihoodClassify(PPCDRData,tgtDir);
-    outputFigures(end+1)=plotLikelihoodClassData(outputData.PPCClassData,outputData.PPCPlotData,'legend',legendStrings,'title','clusters in log-likelihood ratio space for PPC analysis','name','PPCClusters');
+%      
+%     %% run PPCA
+%     ex.bin.fitPPCA();
+%     ex.analysis(end).notes='full data PPCA';
+%     
+%     %get mask for PPC's based on which eigenvaluse exceed the noise floor:
+%     PPCmask=ex.analysis(end).data.latent>(PCNoise(1:numel(ex.analysis(end).data.latent)));
+%     disp(['found ',num2str(sum(PPCmask)),' PPCs with eigenvalues above the noise floor']);
+%     %convert DRData into PPCA space
+%     PPCDRData=ex.analysis(end).data.stats.Recon;
+%     PPCDRData=PPCDRData(:,PPCmask);
+%     
+%     [outputData.movePPCClassData,outputData.movePPCPlotData]=likelihoodClassify(PPCDRData,tgtDir);
+%     outputFigures(end+1)=plotClassData(outputData.movePPCPlotData.reducedData,outputData.movePPCClassData.class,'correct',outputData.movePPCClassData.fullModelCorrect,'legend',legendStrings,'title','During-Move: clusters in log-likelihood ratio space for PPC analysis','name','PPCClusters');
+% 
+%     
+%     %% run FA
+%     ex.bin.dimReductionConfig.dimension=numPCFeatures;
+%     ex.bin.fitFA();
+%     ex.analysis(end).notes='Factor Analysis';
+%     
+%     FAData=[ex.analysis(end).data.F];%factor loadings
+%     
+%     [outputData.moveFAClassData,outputData.moveFAPlotData]=likelihoodClassify(FAData,tgtDir);
+%     outputFigures(end+1)=plotClassData(outputData.moveFAPlotData.reducedData,outputData.moveFAClassData.class,'correct',outputData.moveFAClassData.fullModelCorrect,'legend',legendStrings,'title','During-Move: clusters in log-likelihood ratio space for Factor analysis','name','FAClusters');
 
     
-    %% run FA
-    ex.bin.dimReductionConfig.dimension=numPCFeatures;
-    ex.bin.fitFA();
-    
-    FAData=[ex.analysis(end).data.F];%factor loadings
-    
-    [outputData.FAClassData,outputData.FAPlotData]=likelihoodClassify(FAData,tgtDir);
-    outputFigures(end+1)=plotLikelihoodClassData(outputData.FAClassData,outputData.FAPlotData,'legend',legendStrings,'title','clusters in log-likelihood ratio space for Factor analysis','name','FAClusters');
-
     %% move objects into outputs
     outputData.cds=cds;
     outputData.ex=ex;
