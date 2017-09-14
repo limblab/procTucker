@@ -27,7 +27,7 @@ function [H]=plotClassData(dataPoints,class,varargin)
         correct=true(size(dataPoints,1),1);
     end
     if ~exist('patchAlpha','var')
-        patchAlpha=0.05;
+        patchAlpha=0.1;
     end
     if ~exist('doLegend','var')
         doLegend=false;
@@ -54,15 +54,15 @@ function [H]=plotClassData(dataPoints,class,varargin)
          %start by finding the major and minor axis of the data:
          classMask=class==classList(i);
          [coeffs]=pca(dataPoints(classMask,:));%the coeffs are the major and minor axis of the variance ellipse for this data, latent is the variance on each axis
-         PCErrs=std(dataPoints*coeffs);
+         PCErrs=std(dataPoints(classMask,:)*coeffs);
          ctr=mean(dataPoints(classMask,:),1);
          %get the basic shape of the ellipse
          baseX=PCErrs(1)*cos([0:360]*pi/180);
          baseY=PCErrs(2)*sin([0:360]*pi/180);
          %now create a rotated ellipse of that shape at the center point
-         ellipseAngle=atan2(coeffs(1,2),coeffs(1,1));
-         x=ctr(1)+baseX*cos(ellipseAngle)-baseY*sin(ellipseAngle);
+         ellipseAngle=atan2(coeffs(2,1),coeffs(1,1));
          y=ctr(2)+baseX*sin(ellipseAngle)+baseY*cos(ellipseAngle);
+         x=ctr(1)+baseX*cos(ellipseAngle)-baseY*sin(ellipseAngle);
          %now plot the ellipse:
          patch(x,y,'b','FaceColor',colorSet(i,:),'FaceAlpha',patchAlpha,'EdgeColor','none')
          
@@ -72,8 +72,8 @@ function [H]=plotClassData(dataPoints,class,varargin)
          baseX=PCErrs(1)*cos([0:360]*pi/180);
          baseY=PCErrs(2)*sin([0:360]*pi/180);
          %now create a rotated ellipse of that shape at the center point
-         x=ctr(1)+baseX*cos(ellipseAngle)-baseY*sin(ellipseAngle);
          y=ctr(2)+baseX*sin(ellipseAngle)+baseY*cos(ellipseAngle);
+         x=ctr(1)+baseX*cos(ellipseAngle)-baseY*sin(ellipseAngle);
          %now plot the ellipse:
          patch(x,y,'b','FaceColor',colorSet(i,:),'FaceAlpha',patchAlpha*.5,'EdgeColor','none')
     end

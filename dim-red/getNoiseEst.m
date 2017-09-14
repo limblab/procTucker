@@ -59,6 +59,6 @@ function noiseEst=getNoiseEst(data,varargin)
         bootStat(:,i)=sort(bootStat(:,i));
     end
     idxPctile=ceil(size(bootStat,1)*pctile);
-    noiseEst=sort(bootStat(idxPctile,:),1,'descend');%sort is necessary since 
+    noiseEst=sort(bootStat(idxPctile,:),1,'descend');
 end
 

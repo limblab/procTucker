@@ -13,7 +13,8 @@ function [plotData]=classifierPlotData(data,dataClass)
     %convert the joint-log likelihood feature space into likelihood
     %ratio space
     plotData.LLRatio=[];
-    mask=triu(true(size(classData.fullModelClassProbs,2)),1);
+%     mask=triu(true(size(classData.fullModelClassProbs,2)),1);
+    mask=triu(true(size(classData.fullModelClassProbs,2)),1)|tril(true(size(classData.fullModelClassProbs,2)),-1);
     for i=1:size(classData.fullModelClassProbs,1)
         tmpLLVec=classData.fullModelClassProbs(i,:);
         tmpLLMat=repmat(tmpLLVec,[numel(tmpLLVec),1]);
