@@ -298,9 +298,9 @@ runDataProcessing(functionName,folderPath,inputData)
 %% unit tracking study
 
 %% efference copy dimensionality reduction analysis
-folderpath='/media/tucker/My Passport/local processing/lando/efferenceCopy/experiment_20170814_COBump/';
+folderpath='/media/tucker/My Passport/local processing/lando/efferenceCopy/20170910_COBump/';
 functionName='efferenceCopyAnalysis';
-inputData.fileName='Lando_20170814_CObump_area2_001.nev';
+inputData.fileName='Lando_20170910_COBump_LeftS1_002.nev';
 inputData.task='taskCObump';
 inputData.ranBy='ranByTucker'; 
 inputData.array1='arrayS1'; 

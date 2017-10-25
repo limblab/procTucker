@@ -187,7 +187,7 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
                         artifactMat(j-1,k,1:inputData.windowSize+inputData.presample)=reshape(cds.analog{1,1}{stimWindows(k,1)-inputData.presample:stimWindows(k,2),j},[1,1,inputData.windowSize+inputData.presample]);
                         chanNum=str2num(cds.analog{1,1}.Properties.VariableNames{j}(5:end));
                         mapIdx=find(mapData.chan==chanNum);
-                        electrodeList{j-1}=mapData.label(mapIdx);
+                        electrodeList{j-1}=mapData.label{mapIdx};
                     else
                         artifactMat(j-1,k,1:inputData.windowSize+inputData.presample)=reshape(cds.lfp{stimWindows(k,1)-inputData.presample:stimWindows(k,2),j},[1,1,inputData.windowSize+inputData.presample]);
                         electrodeList{j-1}=cds.lfp.Properties.VariableNames{j};

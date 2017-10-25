@@ -181,8 +181,8 @@ function [figureList,dataStruct]=comparePD_actpass(folderpath,inputData)
     fitLine=polyval(p,fitRange);
     plot(fitRange,fitLine,'r');
     title('Vel PD vs Force PD, during bumps')
-    ylabel('PD during reach')
-    xlabel('PD during bump')
+    ylabel('Vel PD')
+    xlabel('Force PD')
     %format_for_lee(figureList(end))
     
     
