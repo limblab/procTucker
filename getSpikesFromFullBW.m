@@ -1,25 +1,26 @@
+function getSpikesFromFullBW()
 %% setup:
     %standard deviations from mean for theshold
-    stdErrThresh=4;
+    stdErrThresh=inputData.stdErrThresh;
 
     %clear high channels flag
-    clearHighChans=true;
+    clearHighChans=inputData.clearHighChans;
     %snippitWindow
-    preSample=10;
-    postSample=38;
+    preSample=inputData.preSample;
+    postSample=inputData.postSample;
     snippit=[-preSample:postSample];
                 
     sampleRate=30000;
     %file to work on
 %     filename=
     %filter
-    cutoff=250;%hz
-    nPoles=2;%1/2 the effective poles since filtfilt doubles effective number of poles
+    cutoff=inputData.HPFreq;%hz
+    nPoles=inputData.poles;%1/2 the effective poles since filtfilt doubles effective number of poles
     [b,a]=butter(nPoles,2*cutoff/sampleRate,'high');
     
     
 %% load file:
-    NSx=openNSx('read', filename);
+    NSx=openNSx('read', [folderPath,inputData.filename]);
 %% clear unwanted high channels:
 if clearHighChans
     if max([NSx.ElectrodesInfo.ElectrodeID])>96
@@ -39,29 +40,51 @@ end
     end
 
 %% select good channels:
-chanMask=true(size(NSx.Data,1),1);    
-for i=1:size(NSx.Data,1)
-    tmpData=reshape(NSx.Data(i,1:10000)/4,[100,100]);
-    figure;plot(tmpData )
-    inputChar='?';
-    while ~strcmpi(inputChar,'g') && ~strcmpi(inputChar,'b')
-        inputChar=input('is the channel good?','s');
-        if numel(inputChar)>1
-            warning('only single characters g or b accepted')
+if inputData.manualCheck
+    chanMask=true(size(NSx.Data,1),1);    
+    for i=1:size(NSx.Data,1)
+        tmpData=reshape(NSx.Data(i,1:10000)/4,[100,100]);
+        figure;plot(tmpData )
+        inputChar='?';
+        while ~strcmpi(inputChar,'g') && ~strcmpi(inputChar,'b')
+            inputChar=input('is the channel good?','s');
+            if numel(inputChar)>1
+                warning('only single characters g or b accepted')
+            end
         end
-    end
-    if strcmpi(inputChar,'b')
-        chanMask(i)=0;
+        if strcmpi(inputChar,'b')
+            chanMask(i)=0;
+        end
     end
 end
 
-
 %% rereference good channels to mean of good channels
+if inputData.meanFilter
     NSx.Data=NSx.Data(chanMask,:)-repmat(mean(NSx.Data(chanMask,:)),[sum(chanMask),1]);
     %also clean up bad channels from meta and electrodsInfo
     NSx.MetaTags.ChannelID=NSx.MetaTags.ChannelID(chanMask);
     NSx.MetaTags.ChannelCount=sum(chanMask);
     NSx.ElectrodesInfo=NSx.ElectrodesInfo(chanMask);
+end
+%% PCA filter
+if inputData.PCAFilter
+    [coeffData,scoreData,latentData]=pca(NSx.Data');
+    
+    %create mask to shuffle data to generate baseline PC weights:
+    mask=zeros(size(NSx.Data));
+    nPoints=size(NSx.Date,2);
+    for i=1:size(mask,2);
+        mask(i,:)=randsample(nPoints,nPoints);
+    end
+    %get PCs of shuffled data
+    coeffBase=pca(NSx.Data(mask)');
+    %compare PC values of real data to shuffled distribution 
+    baseDist=fitdist(coeffBase(:),'kernel');
+    probs=reshape(cdf(baseDist,coeffData(:)),size(coeffData));
+    mask=sum(probs>.95)>5;
+    NSx.Data=NSx.Data-scoreData(mask,:)';
+    
+end
 %% threshold
     thresholdCrossings=nan(size(NSx.Data,1), ceil(size(NSx.Data,2)/postSample));
     for i=1:size(NSx.Data,1)
@@ -114,7 +137,7 @@ end
         nev.MetaTags.ChannelID=NSx.MetaTags.ChannelID;
     %Data field
         %SerialDigitalIO
-            nev.Data.SerialDigitalIO.InputType=[];
+            nev.Data.SeriNSx.DataalDigitalIO.InputType=[];
             nev.Data.SerialDigitalIO.TimeStamp=[];
             nev.Data.SerialDigitalIO.TimeStampSec=[];
             nev.Data.SerialDigitalIO.Type=[];

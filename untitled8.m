@@ -1,5 +1,5 @@
 %% set up
-targetDir='/media/tucker/My Passport/local processing/stimTesting/20171020/';
+targetDir='/media/tucker/My Passport/local processing/stimTesting/20171121_standardAmp/';
 
 
 

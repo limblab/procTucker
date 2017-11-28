@@ -40,8 +40,8 @@ input_data.array_map_path='/media/tucker/My Passport/local processing/Han/experi
 data_struct = runDataProcessing(function_name,folderpath,input_data);
 
 %% process PDs using Raeed/Tucker functions
-folderpath='/media/tucker/My Passport/local processing/Han/experiment_20170403_RW_PD/';
-input_data.prefix='Han_20170403_RW_tucker_001-s';
+folderpath='/media/tucker/My Passport/local processing/Chips/experiment_20160128_RW/';
+input_data.prefix='Chips_20160128_RW_tucker_002';
 function_name='get_PDs';
 input_data.labnum=6;
 input_data.do_unit_pds=0;
@@ -169,20 +169,28 @@ input_data.matchstring='Pedro';
 input_data.labnum=2;
 data_struct = run_data_processing(function_name,folderpath,input_data);
 %% parse file for katsaggelos group using commonDataStructure:
-folderpath='/media/tucker/My Passport/local processing/lando/20170511_RW_withmotion_forKatsaggelos/';
+% folderpath='/media/tucker/My Passport/local processing/lando/20170511_RW_withmotion_forKatsaggelos/';
+% inputData.fileName1='Lando_RW_20170511_CDS_MotionTracking.mat';
+folderpath='/media/tucker/My Passport/local processing/lando/20170728_RW_motionTracking_katsaggelos_improved/';
+inputData.fileName1='Lando_RW_hold_20170728_001_CDS_MotionTracking.mat';
+inputData.mapFile='/media/tucker/My Passport/local processing/lando/SN 6251-001701.cmp';
+inputData.monkey='monkeyLando';
+
+% folderpath='/media/tucker/My Passport/local processing/Han/experiment_20160315_RW_withmotiontracking_forKatsaggelos/';
+% inputData.fileName1='Han_20160315_RW_area2_001_CDS.mat';
+% inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
+% inputData.monkey='monkeyHan';
+
+% folderpath='/media/tucker/My Passport/local processing/chips/experiment_20151203_RW_forKatsaggelosGrp/';
+% inputData.fileName1='Chips_20151203_RW_002_CDS.mat';
+% inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
+% inputData.monkey='monkeyChips';
+
 functionName='parseForKatsaggelos';
-inputData.fileName1='Lando_RW_20170511_CDS_MotionTracking.mat';
 
 inputData.task='taskRW';
 inputData.ranBy='ranByRaeed'; 
 inputData.array1='arrayArea2'; 
-inputData.monkey='monkeyChips';
-%han
-%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
-%chips
-% inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
-%lando
-inputData.mapFile='/media/tucker/My Passport/local processing/lando/SN 6251-001701.cmp';
 inputData.lab=6;
 
 inputData.binMethod='bin';
@@ -337,3 +345,17 @@ functionName='checkEISStability';
 inputData=[];
 
 dataStruct=runDataProcessing(functionName,folderPath,inputData)
+
+%% parse full badwidth file into threshold crossings:
+folderPath=
+functionName='getSpikesFromFullBW';
+inputData.fileName;
+inputData.HPFreq=250;
+inputData.poles=2;
+inputData.stdErrThres=4;
+inputData.clearHighChans=true;%clears channels above 96
+inputData.manualCheck=false;
+inputData.meanFilter=false;
+inputData.PCAFilter=true;
+inputData.presample=10;
+inputData.postSample=38;

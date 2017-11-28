@@ -26,6 +26,13 @@ function [figureList,outputData]=parseForKatsaggelos(folderpath,inputData)
 
     ex.addSession(cds);
     clear cds
+    %% get flags for muscle analysis dropout:
+        if isempty(find(strcmp(ex.analog(end).data.Properties.VariableNames,'abd_poll_longus_len')))
+            dropOut=isStill(ex.analog(end).data.abd_poll_longus) & isStill(ex.analog(end).data.anconeus) & isStill(ex.analog(end).data.brachioradialis);
+        else
+            dropOut=isStill(ex.analog(end).data.abd_poll_longus_len) & isStill(ex.analog(end).data.anconeus_len) & isStill(ex.analog(end).data.brachioradialis_len);
+        end
+        ex.analog(end).addCols(table(dropOut,'VariableNames',{'dropOut'}));
     %% configure experiment
     % set binConfig parameters:
     ex.binConfig.include(1).field='units';
@@ -33,7 +40,14 @@ function [figureList,outputData]=parseForKatsaggelos(folderpath,inputData)
     ex.binConfig.include(2).field='kin';
     ex.binConfig.include(2).which={};
     ex.binConfig.include(3).field='analog';
-    ex.binConfig.include(3).which=ex.analog(end).data.Properties.VariableNames(2:end);%kinect data\
+    
+    if isempty(find(strcmp(ex.analog(end).data.Properties.VariableNames,'abd_poll_longus_len')))
+        ex.binConfig.include(3).which=ex.analog(end).data.Properties.VariableNames(2:end);%kinect data\
+    else
+        ex.binConfig.include(3).which=ex.analog(end).data.Properties.VariableNames(~cellfun(@isempty,strfind(ex.analog(end).data.Properties.VariableNames,'_ang')));
+        ex.binConfig.include(3).which=[ex.binConfig.include(3).which, ex.analog(end).data.Properties.VariableNames(~cellfun(@isempty,strfind(ex.analog(end).data.Properties.VariableNames,'_len')))];
+        ex.binConfig.include(3).which=[ex.binConfig.include(3).which, ex.analog(end).data.Properties.VariableNames(~cellfun(@isempty,strfind(ex.analog(end).data.Properties.VariableNames,'dropOut')))];
+    end
     
      % set firingRateConfig parameters
         ex.firingRateConfig.cropType='tightCrop';
@@ -41,7 +55,6 @@ function [figureList,outputData]=parseForKatsaggelos(folderpath,inputData)
         ex.firingRateConfig.method=inputData.binMethod;
         ex.firingRateConfig.kernelWidth=inputData.kernelWidth;
         %ex.firingRateConfig.lags=[-2 3];
-
     %% bin the data
         disp('binning data')
         ex.binData()
