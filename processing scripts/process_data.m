@@ -347,15 +347,17 @@ inputData=[];
 dataStruct=runDataProcessing(functionName,folderPath,inputData)
 
 %% parse full badwidth file into threshold crossings:
-folderPath=
+folderPath='/media/tucker/My Passport/local processing/Chewie/20171015/';
 functionName='getSpikesFromFullBW';
-inputData.fileName;
+inputData.fileName='Chewie_20171015_tucker_PMD_RW_008.ns5';
 inputData.HPFreq=250;
 inputData.poles=2;
-inputData.stdErrThres=4;
+inputData.stdErrThresh=4;
 inputData.clearHighChans=true;%clears channels above 96
 inputData.manualCheck=false;
 inputData.meanFilter=false;
 inputData.PCAFilter=true;
-inputData.presample=10;
+inputData.preSample=10;
 inputData.postSample=38;
+
+dataStruct=runDataProcessing(functionName,folderPath,inputData)

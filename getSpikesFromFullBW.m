@@ -1,4 +1,4 @@
-function getSpikesFromFullBW()
+function [figureList,outputData]=getSpikesFromFullBW(folderPath,inputData)
 %% setup:
     %standard deviations from mean for theshold
     stdErrThresh=inputData.stdErrThresh;
@@ -20,9 +20,11 @@ function getSpikesFromFullBW()
     
     
 %% load file:
-    NSx=openNSx('read', [folderPath,inputData.filename]);
+disp('opening file')
+    NSx=openNSx('read', [folderPath,inputData.fileName]);
 %% clear unwanted high channels:
 if clearHighChans
+    disp('removing unwanted channels')
     if max([NSx.ElectrodesInfo.ElectrodeID])>96
         chanMask=[NSx.ElectrodesInfo.ElectrodeID]<97;
         %data
@@ -35,6 +37,7 @@ if clearHighChans
     end
 end
 %% HP filter
+    disp('high pass filtering')
     if median([NSx.ElectrodesInfo.HighFreqCorner])/1000<cutoff
         NSx.Data=filtfilt(b,a,NSx.Data')';
     end
@@ -60,6 +63,7 @@ end
 
 %% rereference good channels to mean of good channels
 if inputData.meanFilter
+    disp('re-referencing to the common mode mean')
     NSx.Data=NSx.Data(chanMask,:)-repmat(mean(NSx.Data(chanMask,:)),[sum(chanMask),1]);
     %also clean up bad channels from meta and electrodsInfo
     NSx.MetaTags.ChannelID=NSx.MetaTags.ChannelID(chanMask);
@@ -68,27 +72,38 @@ if inputData.meanFilter
 end
 %% PCA filter
 if inputData.PCAFilter
-    [coeffData,scoreData,latentData]=pca(NSx.Data');
+    nPoints=size(NSx.Data,2);
+    disp('estimating PCs of the data')
+    [coeffData]=pca(single(NSx.Data(:,randsample(nPoints,floor(nPoints/10)))'));
     
+    disp('shuffling the data')
     %create mask to shuffle data to generate baseline PC weights:
-    mask=zeros(size(NSx.Data));
-    nPoints=size(NSx.Date,2);
-    for i=1:size(mask,2);
-        mask(i,:)=randsample(nPoints,nPoints);
+    mask=zeros(size(NSx.Data,1),floor(nPoints/10));
+    for i=1:size(mask,1);
+        mask(i,:)=datasample(nPoints,floor(nPoints/10),'Replace',false);
     end
     %get PCs of shuffled data
-    coeffBase=pca(NSx.Data(mask)');
+    disp('calculating PCs of shuffled data')
+    coeffBase=pca(single(NSx.Data(mask)'));
     %compare PC values of real data to shuffled distribution 
+    disp('checking whether weights in PCs of real data fall outside the normal range for shuffled data')
     baseDist=fitdist(coeffBase(:),'kernel');
     probs=reshape(cdf(baseDist,coeffData(:)),size(coeffData));
     mask=sum(probs>.95)>5;
-    NSx.Data=NSx.Data-scoreData(mask,:)';
-    
+    numPCs=sum(mask);
+    if numPCs>0
+        disp(['found ',num2str(numPCs),' PCs that have weights across multiple channels'])
+        disp('removing these PCs')
+        tmp=double(NSx.Data')*inv(coeffData);
+        tmp(:,mask)=0;
+        NSx.Data=int16(round(NSx.Data-int16(tmp*coeffData)'));
+    end
 end
 %% threshold
+disp('find threshold crossings')
     thresholdCrossings=nan(size(NSx.Data,1), ceil(size(NSx.Data,2)/postSample));
     for i=1:size(NSx.Data,1)
-        thresholdVal(i)=-1*stdErrThresh*sqrt(var(NSx.Data(i,:)));
+        thresholdVal(i)=-1*stdErrThresh*sqrt(var(single(NSx.Data(i,:))));
         if NSx.Data(i,1)<thresholdVal(i)
             descending=false;
         else
@@ -113,6 +128,7 @@ end
     end
 
 %% compose nev
+disp('starting to compose nev structure')
     %MetaTags field
         nev.MetaTags.Subject=[];
         nev.MetaTags.Experimenter=[];
@@ -124,7 +140,6 @@ end
         nev.MetaTags.openNEVver=[];
         nev.MetaTags.DateTimeRaw=NSx.MetaTags.DateTimeRaw;
         nev.MetaTags.FileSpec='2.3';
-        nev.MetaTags.PacketBytes=2*(size(currentWaves{1},2)+4);
         nev.MetaTags.HeaderOffset=14224;
         nev.MetaTags.DataDuration=round(NSx.MetaTags.DataDurationSec*30000);
         nev.MetaTags.DataDurationSec=NSx.MetaTags.DataDurationSec;
@@ -151,6 +166,7 @@ end
                 currentWaves{i}=reshape(NSx.Data(i,sampleMat(:)),size(sampleMat));
                 electrodeList{i}=NSx.ElectrodesInfo(i).ElectrodeID*uint16(ones(size(points{i})));
             end
+            nev.MetaTags.PacketBytes=2*(size(currentWaves{1},2)+4);
             %TimeStamp
                 nev.Data.Spikes.TimeStamp=uint32(cell2mat(points));
             %Electrode
@@ -222,3 +238,8 @@ end
         end
     %IOLabels field
     nev.IOLabels={['serial' 0 0 0 0 0 0 0 0 0 0],['digin' 0 0 0 0 0 0 0 0 0 0 0] };
+    
+    saveNEV(nev,[folderPath,'Output_Data',filesep, inputData.fileName(1:end-3),'nev'])
+    outputData.nev=nev;
+    outputData.ns5=NSx;
+    figureList=[];
