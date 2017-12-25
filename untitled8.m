@@ -1,6 +1,5 @@
 %% set up
-targetDir='/media/tucker/My Passport/local processing/stimTesting/20171121_standardAmp/';
-
+targetDir='/media/tucker/My Passport/local processing/stimTesting/20171219_resistorNetwork/modded/';
 
 
 %% parse files into folders:

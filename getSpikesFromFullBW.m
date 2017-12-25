@@ -80,7 +80,7 @@ if inputData.PCAFilter
     %create mask to shuffle data to generate baseline PC weights:
     mask=zeros(size(NSx.Data,1),floor(nPoints/10));
     for i=1:size(mask,1);
-        mask(i,:)=datasample(nPoints,floor(nPoints/10),'Replace',false);
+        mask(i,:)=datasample(1:nPoints,floor(nPoints/10),'Replace',false);%datasample appears to be *slightly* faster than randsample for large data
     end
     %get PCs of shuffled data
     disp('calculating PCs of shuffled data')

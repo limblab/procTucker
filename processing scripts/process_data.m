@@ -361,3 +361,27 @@ inputData.preSample=10;
 inputData.postSample=38;
 
 dataStruct=runDataProcessing(functionName,folderPath,inputData)
+%% process stim sweep for artifact duration:
+%% process stimulation artifacts:
+folderpath='/media/tucker/My Passport/local processing/stimTesting/ArtificialMonkey_20171221/';
+functionName='processStimAmpSweep';
+
+inputData.task='tasknone';
+inputData.ranBy='ranByTucker'; 
+inputData.array1='arrayNSS'; 
+inputData.monkey='monkeyNSS';
+%han
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
+%chips
+inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
+%chewie
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161205_chewie_PMDStim_PMD-recording/Chewie Left PMd SN 6251-001469.cmp';
+%saline
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161020_saline/1025-0370.cmp';
+%saline2
+%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
+inputData.windowSize=30*100;%in points
+inputData.presample=5;%in points
+inputData.lab=6;
+inputData.useSyncLabel=[];
+dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
