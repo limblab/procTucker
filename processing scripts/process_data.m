@@ -229,26 +229,26 @@ function_name='testEncoderSkips';
 data_struct=run_data_processing(function_name,folderpath);
 
 %% process stimulation artifacts:
-folderpath='/media/tucker/My Passport/local processing/chips/experiment_20170220_unbalancedPulseStim/narrowWindow/figuresForGrantProgressReport/';
+folderpath='/media/tucker/My Passport/local processing/stimTesting/20180202_UC_StimSwitchTest/cathodal_100Hz/';
 functionName='processStimArtifact';
 
 inputData.task='tasknone';
 inputData.ranBy='ranByTucker'; 
 inputData.array1='arrayS1'; 
-inputData.monkey='monkeyChips';
+inputData.monkey='monkeyResistor';
 %han
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
 %chips
-inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
+% inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/SN 6251-001455.cmp';
 %chewie
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161205_chewie_PMDStim_PMD-recording/Chewie Left PMd SN 6251-001469.cmp';
 %saline
-%inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161020_saline/1025-0370.cmp';
+inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161020_saline/1025-0370.cmp';
 %saline2
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161220_saline/SN 6251-001695.cmp';
-inputData.windowSize=30*15;%in points
+inputData.windowSize=30*10;%in points
 inputData.presample=5;%in points
-inputData.plotRange=0.800;%in mV
+inputData.plotRange=08.300;%in mV
 inputData.lab=6;
 inputData.useSyncLabel=[];
 dataStruct2 = runDataProcessing(functionName,folderpath,inputData);
@@ -362,14 +362,19 @@ inputData.postSample=38;
 
 dataStruct=runDataProcessing(functionName,folderPath,inputData)
 %% process stim sweep for artifact duration:
-%% process stimulation artifacts:
-folderpath='/media/tucker/My Passport/local processing/stimTesting/ArtificialMonkey_20171221/';
+%% process stimulation artifacts from sweeps in current amplitude:
+folderpath='/media/tucker/My Passport/local processing/stimTesting/20180202_2/CH1/';
 functionName='processStimAmpSweep';
 
 inputData.task='tasknone';
 inputData.ranBy='ranByTucker'; 
 inputData.array1='arrayNSS'; 
 inputData.monkey='monkeyNSS';
+
+inputData.ampStep=5;
+inputData.minAmp=1;
+inputData.maxAmp=50;
+
 %han
 %inputData.mapFile='mapFile/media/tucker/My Passport/local processing/stimTesting/20161112/SN 6251-001459.cmp';
 %chips

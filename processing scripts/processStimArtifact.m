@@ -10,15 +10,6 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
     end
     cd(folderpath);
     fileList=dir('*.nev');
-
-    %get the mapfile info:
-    %     mapFile=inputData.mapFile(8:end);
-%     mapData=readtable(mapFile,'FileType','text','HeaderLines',13,'Delimiter','tab');
-%     mapData.Properties.VariableNames{1}='col';%fix the column header
-%     %fix the labels:
-%     for i=1:size(mapData,1)
-%         mapData.label{i}=[inputData.array1(6:end),mapData.label{i}];
-%     end
     
     mapData=loadMapFile(inputData.mapFile(8:end));
         for i=1:size(mapData,1)
@@ -103,16 +94,6 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
             end
             %% use sync to get stim times:
             artifactData(i).stimOn=find(diff(cds.analog{aIdx}.(syncName)-mean(cds.analog{aIdx}.(syncName))>3)>.5);
-%             if useSync
-%                 stimOn=find(diff(cds.analog{aIdx}.sync-mean(cds.analog{aIdx}.sync)>3)>.5);
-%             else
-%                 stimOn=find(diff(cds.analog{aIdx}.ainp16-mean(cds.analog{aIdx}.ainp16)>3)>.5);
-%             end
-%             if numel(stimOn>100)
-%                 %loop through till we find a likely channel:
-%                 for i=2:size(cds.lfp,2)
-%                 end
-%             end
             stimOff=find(diff(cds.analog{aIdx}.(syncName)-mean(cds.analog{aIdx}.(syncName))<-3)>.5);
             artifactData(i).stimOff=nan(size(artifactData(i).stimOn));
             for j=1:numel(artifactData(i).stimOn)
@@ -136,8 +117,6 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
                     mIdx=j;
                 end
             end
-            
-            
             
             %% put spikes into structure:
             idxStart=strfind(fileList(i).name,'chan')+4;
@@ -166,12 +145,7 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
                 end
             end
             artifactData(i).stimChannel=str2num(fileList(i).name(idxStart:idxEnd));
-
-%             labelList={cds.units.label};
-%             arrayList={cds.units.array};
-%             for j=1:numel(labelList)
-%                 labelList{j}=[arrayList{j},labelList{j}];
-%             end
+            
             if isempty(cds.lfp)
                 numChans=size(cds.analog{1,1},2);
             else
@@ -213,6 +187,7 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
             artifactData(i).electrodeNames=electrodeList;
             artifactData(i).monitor1=monitorCh1Mat;
             artifactData(i).monitor2=monitorCh2Mat;
+            
             %now get the monitor data showing the driving voltage the
             %stimulator used for the pulses
             for j=2:numChans
@@ -220,8 +195,6 @@ function [ outputFigures,outputData ] = processStimArtifact(folderpath, inputDat
                 end
             end
             
-            
-            %clear cds
             clear cds
         end
         outputData.artifactData=artifactData;
